@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import API from "../../../Lib/axiosInstace";
 import type { QuizState, QuizQuestion } from "../../../Typescript/Interface/Interface";
+import { toast } from "sonner";
 
 /* ================= API RESPONSE TYPE ================= */
 
@@ -79,6 +80,7 @@ const quizSlice = createSlice({
       }
 
       state.currentQuestionIndex += 1;
+      toast.info("Answer Send")
 
       if (state.currentQuestionIndex >= state.questions.length) {
         state.isFinished = true;
@@ -89,6 +91,7 @@ const quizSlice = createSlice({
       state.currentQuestionIndex = 0;
       state.score = 0;
       state.isFinished = false;
+      toast.success("Start Again")
     },
   },
 
