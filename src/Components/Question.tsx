@@ -1,7 +1,5 @@
-// import { useAppSelector } from "../";
 import { useAppseletor } from "../Hooks/Utils/Redux";
 import Options from "./Options";
-// import ProgressBar from "./ProgressBar";
 
 const Question = () => {
   const { questions, currentQuestionIndex } = useAppseletor(

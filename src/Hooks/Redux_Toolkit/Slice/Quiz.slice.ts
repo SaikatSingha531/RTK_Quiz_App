@@ -19,7 +19,7 @@ const transformQuizData = (results: any[]): QuizQuestion[] => {
   }));
 };
 
-// 🌐 Fetch quiz data from API
+
 export const fetchQuizData = createAsyncThunk(
   "quiz/fetchQuizData",
   async () => {
@@ -31,7 +31,7 @@ export const fetchQuizData = createAsyncThunk(
   }
 );
 
-// 🧠 Initial state
+
 const initialState: QuizState = {
   questions: [],
   currentQuestionIndex: 0,
@@ -45,25 +45,20 @@ const quizSlice = createSlice({
   name: "quiz",
   initialState,
   reducers: {
-    // ✅ User clicks option → answer checked → next question
     answerAndNext(state, action: PayloadAction<string>) {
       const currentQuestion = state.questions[state.currentQuestionIndex];
 
-      // validate answer
       if (action.payload === currentQuestion.correctAnswer) {
         state.score += 1;
       }
 
-      // move to next question
       state.currentQuestionIndex += 1;
 
-      // finish quiz
       if (state.currentQuestionIndex >= state.questions.length) {
         state.isFinished = true;
       }
     },
 
-    // 🔄 Restart quiz
     resetQuiz(state) {
   state.currentQuestionIndex = 0;
   state.score = 0;
