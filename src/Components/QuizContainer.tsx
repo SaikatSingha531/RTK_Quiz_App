@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import Question from "./Question";
-import Result from "./Result";
+import Question from "../Pages/Question";
+import Result from "../Pages/Result";
 import { useAppdispatch, useAppseletor } from "../Hooks/Utils/Redux";
 import { fetchQuizData } from "../Hooks/Redux_Toolkit/Slice/Quiz.slice";
 

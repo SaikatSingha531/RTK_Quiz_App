@@ -3,8 +3,6 @@ import API from "../../../Lib/axiosInstace";
 import type { QuizState, QuizQuestion } from "../../../Typescript/Interface/Interface";
 import { toast } from "sonner";
 
-/* ================= API RESPONSE TYPE ================= */
-
 interface ApiQuizResult {
   question: string;
   correct_answer: string;
@@ -13,8 +11,6 @@ interface ApiQuizResult {
   difficulty: string;
   type: "boolean" | "multiple";
 }
-
-/* ================= TRANSFORM FUNCTION ================= */
 
 const transformQuizData = (results: ApiQuizResult[]): QuizQuestion[] => {
   return results.map((item, index) => ({
@@ -32,7 +28,6 @@ const transformQuizData = (results: ApiQuizResult[]): QuizQuestion[] => {
   }));
 };
 
-/* ================= ASYNC THUNK ================= */
 
 export const fetchQuizData = createAsyncThunk<
   QuizQuestion[],
@@ -53,7 +48,6 @@ export const fetchQuizData = createAsyncThunk<
   }
 );
 
-/* ================= INITIAL STATE ================= */
 
 const initialState: QuizState = {
   questions: [],
@@ -64,7 +58,6 @@ const initialState: QuizState = {
   error: null,
 };
 
-/* ================= SLICE ================= */
 
 const quizSlice = createSlice({
   name: "quiz",
