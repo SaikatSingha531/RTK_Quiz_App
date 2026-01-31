@@ -1,9 +1,21 @@
-import { createSlice, createAsyncThunk,type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import API from "../../../Lib/axiosInstace";
 import type { QuizState, QuizQuestion } from "../../../Typescript/Interface/Interface";
 
+/* ================= API RESPONSE TYPE ================= */
 
-const transformQuizData = (results: any[]): QuizQuestion[] => {
+interface ApiQuizResult {
+  question: string;
+  correct_answer: string;
+  incorrect_answers: string[];
+  category: string;
+  difficulty: string;
+  type: "boolean" | "multiple";
+}
+
+/* ================= TRANSFORM FUNCTION ================= */
+
+const transformQuizData = (results: ApiQuizResult[]): QuizQuestion[] => {
   return results.map((item, index) => ({
     id: index + 1,
     question: item.question,
@@ -19,18 +31,28 @@ const transformQuizData = (results: any[]): QuizQuestion[] => {
   }));
 };
 
+/* ================= ASYNC THUNK ================= */
 
-export const fetchQuizData = createAsyncThunk(
+export const fetchQuizData = createAsyncThunk<
+  QuizQuestion[],
+  void,
+  { rejectValue: string }
+>(
   "quiz/fetchQuizData",
-  async () => {
-    const response = await API.get("/api.php", {
-      params: { amount: 5 },
-    });
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await API.get("/api.php", {
+        params: { amount: 5 },
+      });
 
-    return transformQuizData(response.data.results);
+      return transformQuizData(response.data.results);
+    } catch {
+      return rejectWithValue("Failed to fetch quiz");
+    }
   }
 );
 
+/* ================= INITIAL STATE ================= */
 
 const initialState: QuizState = {
   questions: [],
@@ -41,12 +63,16 @@ const initialState: QuizState = {
   error: null,
 };
 
+/* ================= SLICE ================= */
+
 const quizSlice = createSlice({
   name: "quiz",
   initialState,
   reducers: {
     answerAndNext(state, action: PayloadAction<string>) {
       const currentQuestion = state.questions[state.currentQuestionIndex];
+
+      if (!currentQuestion) return;
 
       if (action.payload === currentQuestion.correctAnswer) {
         state.score += 1;
@@ -60,25 +86,28 @@ const quizSlice = createSlice({
     },
 
     resetQuiz(state) {
-  state.currentQuestionIndex = 0;
-  state.score = 0;
-  state.isFinished = false;
-}
-
+      state.currentQuestionIndex = 0;
+      state.score = 0;
+      state.isFinished = false;
+    },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchQuizData.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchQuizData.fulfilled, (state, action) => {
+      .addCase(
+        fetchQuizData.fulfilled,
+        (state, action: PayloadAction<QuizQuestion[]>) => {
+          state.isLoading = false;
+          state.questions = action.payload;
+        }
+      )
+      .addCase(fetchQuizData.rejected, (state, action) => {
         state.isLoading = false;
-        state.questions = action.payload;
-      })
-      .addCase(fetchQuizData.rejected, (state) => {
-        state.isLoading = false;
-        state.error = "Failed to load quiz";
+        state.error = action.payload ?? "Failed to load quiz";
       });
   },
 });

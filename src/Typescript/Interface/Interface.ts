@@ -10,7 +10,6 @@ export interface QuizQuestion {
 export interface QuizState {
   questions: QuizQuestion[];
   currentQuestionIndex: number;
-  // selectedAnswer: string | null;
   score: number;
   isFinished: boolean;
   isLoading: boolean;
