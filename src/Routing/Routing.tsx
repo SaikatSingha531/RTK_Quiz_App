@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import Question from "../Components/Question";
 import QuizContainer from "../Components/QuizContainer";
 
 

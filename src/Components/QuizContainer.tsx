@@ -1,6 +1,4 @@
 import { useEffect } from "react";
-// import { useAppDispatch, useAppSelector } from "../app/hooks";
-// import { fetchQuizData } from "../Hooks/Redux_Toolkit/Slice/Quiz.slice";
 import Question from "./Question";
 import Result from "./Result";
 import { useAppdispatch, useAppseletor } from "../Hooks/Utils/Redux";

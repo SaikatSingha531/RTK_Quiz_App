@@ -1,14 +1,8 @@
-
-
-
-
-
-
 import { createSlice, createAsyncThunk,type PayloadAction } from "@reduxjs/toolkit";
 import API from "../../../Lib/axiosInstace";
 import type { QuizState, QuizQuestion } from "../../../Typescript/Interface/Interface";
 
-// 🔁 Transform API response into app-friendly data
+
 const transformQuizData = (results: any[]): QuizQuestion[] => {
   return results.map((item, index) => ({
     id: index + 1,
