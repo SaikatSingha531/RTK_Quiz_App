@@ -5,6 +5,7 @@ export interface QuizQuestion {
   correctAnswer: string;
   category: string;
   difficulty: string;
+  selectedAnswer?: string | null;
 }
 
 export interface QuizState {

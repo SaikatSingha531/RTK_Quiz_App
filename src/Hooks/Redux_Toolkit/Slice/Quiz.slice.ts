@@ -3,6 +3,7 @@ import API from "../../../Lib/axiosInstace";
 import type { QuizState, QuizQuestion } from "../../../Typescript/Interface/Interface";
 import { toast } from "sonner";
 
+
 interface ApiQuizResult {
   question: string;
   correct_answer: string;
@@ -11,6 +12,7 @@ interface ApiQuizResult {
   difficulty: string;
   type: "boolean" | "multiple";
 }
+
 
 const transformQuizData = (results: ApiQuizResult[]): QuizQuestion[] => {
   return results.map((item, index) => ({
@@ -23,6 +25,7 @@ const transformQuizData = (results: ApiQuizResult[]): QuizQuestion[] => {
             () => Math.random() - 0.5
           ),
     correctAnswer: item.correct_answer,
+    selectedAnswer: null, 
     category: item.category,
     difficulty: item.difficulty,
   }));
@@ -33,20 +36,17 @@ export const fetchQuizData = createAsyncThunk<
   QuizQuestion[],
   void,
   { rejectValue: string }
->(
-  "quiz/fetchQuizData",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await API.get("/api.php", {
-        params: { amount: 5 },
-      });
+>("quiz/fetchQuizData", async (_, { rejectWithValue }) => {
+  try {
+    const response = await API.get("/api.php", {
+      params: { amount: 5 },
+    });
 
-      return transformQuizData(response.data.results);
-    } catch {
-      return rejectWithValue("Failed to fetch quiz");
-    }
+    return transformQuizData(response.data.results);
+  } catch {
+    return rejectWithValue("Failed to fetch quiz");
   }
-);
+});
 
 
 const initialState: QuizState = {
@@ -59,21 +59,24 @@ const initialState: QuizState = {
 };
 
 
+
 const quizSlice = createSlice({
   name: "quiz",
   initialState,
+
   reducers: {
     answerAndNext(state, action: PayloadAction<string>) {
       const currentQuestion = state.questions[state.currentQuestionIndex];
-
       if (!currentQuestion) return;
+
+      currentQuestion.selectedAnswer = action.payload;
 
       if (action.payload === currentQuestion.correctAnswer) {
         state.score += 1;
       }
 
       state.currentQuestionIndex += 1;
-      toast.info("Answer Send")
+      toast.info("Answer submitted");
 
       if (state.currentQuestionIndex >= state.questions.length) {
         state.isFinished = true;
@@ -84,7 +87,12 @@ const quizSlice = createSlice({
       state.currentQuestionIndex = 0;
       state.score = 0;
       state.isFinished = false;
-      toast.success("Start Again")
+
+      state.questions.forEach((q) => {
+        q.selectedAnswer = null;
+      });
+
+      toast.success("Start Again");
     },
   },
 
@@ -107,6 +115,7 @@ const quizSlice = createSlice({
       });
   },
 });
+
 
 export const { answerAndNext, resetQuiz } = quizSlice.actions;
 export default quizSlice.reducer;
